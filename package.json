@@ -1,0 +1,44 @@
+{
+  "_from": "aolists@",
+  "author": "Jose E. Gonzalez jr <Jose.Gonzalez@eCandidus.com>",
+  "bin": {
+    "aoLists-webtop": "./bin/aolists-db"
+  },
+  "bugs": {
+    "url": "https://github.com/eCandidus/aoLists-webtop/"
+  },
+  "dependencies": {
+    "express": ">=3.4.4",
+    "raw-body": ">=1.2.2",
+    "crypto": ">=0.0.3",
+    "request":  ">=2.36.0",
+    "dequeue":  ">=1.0.3",
+    "socket.io":  ">=1.0.6"
+  },
+  "description": "Web interface for aoLists",
+  "directories": {
+    "lib": "./lib"
+  },
+  "engines": {
+    "node": ">= 0.10.0"
+  },
+  "keywords": [
+    "web",
+    "node.js",
+    "aoLists",
+    "eCandidus",
+    "subscriptions",
+    "attachments"
+  ],
+  "name": "aolists-webtop",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/eCandidus/aoLists-webtop/"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "version": "0.1.0",
+  "main": "server.js",
+  "license": "LGPL"
+}
