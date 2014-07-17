@@ -2,7 +2,7 @@
   "_from": "aolists@",
   "author": "Jose E. Gonzalez jr <Jose.Gonzalez@eCandidus.com>",
   "bin": {
-    "aoLists-webtop": "./bin/aolists-db"
+    "aoLists-webtop": "./bin/aolists-webtop"
   },
   "bugs": {
     "url": "https://github.com/eCandidus/aoLists-webtop/"
@@ -38,7 +38,7 @@
   "scripts": {
     "start": "node server.js"
   },
-  "version": "0.1.0",
+  "version": "0.1.3",
   "main": "server.js",
-  "license": "LGPL"
+  "license": "GPL"
 }

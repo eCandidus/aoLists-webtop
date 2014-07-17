@@ -1,0 +1,115 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server">
+    <title>aoLists Webtop</title>
+    <link rel="shortcut icon" href="images/favicon.ico" />
+
+    <link rel="stylesheet" type="text/css" href="ext/resources/css/ext-all.css" />
+    <link rel="stylesheet" type="text/css" href="ext/tp/css/Ext.ux.css" />
+    <link rel="stylesheet" type="text/css" href="ext/ncalendar/css/calendar.css" />
+    <link rel="stylesheet" type="text/css" href="ext/ncalendar/css/daysviewpanel.css" />
+    <link rel="stylesheet" type="text/css" href="ext/ncalendar/css/monthviewpanel.css" />
+    <link rel="stylesheet" type="text/css" href="css/desktop.css" />
+    <link rel="stylesheet" type="text/css" id="theme" href="" />
+    <link rel="stylesheet" type="text/css" href="solution/my.css" />
+    <link rel="stylesheet" type="text/css" href="solution/silk.css" />
+</head>
+<body>
+    <div id="x-desktop" style="overflow:auto">
+        <div id="Div1" style="font-size: x-large; color: white; vertical-align: middle">
+            <img id="x-logo" src="images/aoLists.png" alt="eCandidus Web Portal;vertical-align: bottom" />
+            aoLists Webtop
+            <a href="http://extjs.com" target="_blank" style="margin:5px; float:right;">
+                <img id="waitGraphics" src="images/extanim32.gif" alt="Please wait..." />
+                <img src="images/powered.png" alt="Powered by ExtJS" />
+            </a>
+        </div>
+
+        <dl id="x-shortcuts"></dl>
+    </div>
+
+
+    <div id="ux-taskbar">
+        <div id="ux-taskbar-start"></div>
+        <div id="ux-taskbuttons-panel"></div>
+        <div class="x-clear"></div>
+    </div>
+    <div id="msg-div">
+    </div>
+
+    <!-- GC -->
+    <!-- CORE LIBS -->
+    <script type="text/javascript" src="ext/ext-base-min.js"></script>
+    <script type="text/javascript" src="ext/ext-all-ecandidus-min.js"></script>
+    <!-- CDN -->
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="https://www.google.com/cloudprint/client/cpgadget.js"></script>
+    <!-- OTHER LIBS -->
+    <script type="text/javascript" src="ext/tp/json.js"></script>
+    <script type="text/javascript" src="ext/tp/Ext.ux.util.js"></script>
+    <script type="text/javascript" src="ext/tp/Ext.ux.form.DateTime.js"></script>
+    <script type="text/javascript" src="ext/tp/Ext.ux.grid.Search.js"></script>
+    <script type="text/javascript" src="ext/tp/Ext.ux.form.BrowseButton.js"></script>
+    <script type="text/javascript" src="ext/tp/Ext.ux.tree.ArrayTree.js"></script>
+    <script type="text/javascript" src="ext/tp/Ext.ux.FileUploader.js"></script>
+    <script type="text/javascript" src="ext/tp/Ext.ux.ToolbarUpload.js"></script>
+    <!-- FOOTPRINT -->
+    <script type="text/javascript" src="solution/objects/myFootprint.js"></script>
+    <!-- DESKTOP FROM EXT -->
+    <script type="text/javascript" src="js/StartMenu.js"></script>
+    <script type="text/javascript" src="js/TaskBar.js"></script>
+    <script type="text/javascript" src="js/Desktop.js"></script>
+    <script type="text/javascript" src="js/App.js"></script>
+    <script type="text/javascript" src="js/Module.js"></script>
+    <!-- CALENDAR -->
+    <script type="text/javascript" src="ext/ncalendar/extFixes.js"></script>
+    <script type="text/javascript" src="ext/ncalendar/extInit.js"></script>
+    <script type="text/javascript" src="ext/ncalendar/ButtonLockedToggle.js"></script>
+    <script type="text/javascript" src="ext/ncalendar/ParallelEventsRegistry.js"></script>
+    <script type="text/javascript" src="ext/ncalendar/EventCalendar.js"></script>
+    <script type="text/javascript" src="ext/ncalendar/CalendarPanel.js"></script>
+    <script type="text/javascript" src="ext/ncalendar/MonthView.js"></script>
+    <script type="text/javascript" src="ext/ncalendar/DaysView.js"></script>
+    <script type="text/javascript" src="ext/ncalendar/PagingToolbar.js"></script>
+    <!-- SYSTEM -->
+    <script type="text/javascript" src="solution/code/mySys.js"></script>
+    <script type="text/javascript" src="solution/code/myCommands.js"></script>
+    <script type="text/javascript" src="solution/code/myRPC.js"></script>
+    <script type="text/javascript" src="solution/code/myBrowserWindow.js"></script>
+    <script type="text/javascript" src="solution/forms/myDialogs.js"></script>
+    <script type="text/javascript" src="solution/components/myControls.js"></script>
+    <script type="text/javascript" src="solution/components/mySelect.js"></script>
+    <script type="text/javascript" src="solution/components/myViewer.js"></script>
+    <script type="text/javascript" src="solution/forms/mySelectForm.js"></script>
+    <script type="text/javascript" src="solution/forms/myViewForm.js"></script>
+    <script type="text/javascript" src="solution/objects/myMenu.js"></script>
+    <script type="text/javascript" src="solution/objects/myApp.js"></script>
+    <!-- VISUAL -->
+    <script type="text/javascript" src="solution/visuals/aoVisualHolder.js"></script>
+    <script type="text/javascript" src="solution/visuals/aoVisualTextField.js"></script>
+    <!-- EXTENSIONS -->
+    <script type="text/javascript" src="solution/tools/WhereUsed.js"></script>
+    <script type="text/javascript" src="solution/tools/History.js"></script>
+    <script type="text/javascript" src="solution/tools/Attachments.js"></script>
+    <script type="text/javascript" src="solution/tools/Merge.js"></script>
+    <script type="text/javascript" src="solution/tools/Convert.js"></script>
+    <script type="text/javascript" src="solution/tools/Calendar.js"></script>
+    <script type="text/javascript" src="solution/tools/DocMgr.js"></script>
+    <script type="text/javascript" src="solution/tools/External.js"></script>
+    <script type="text/javascript" src="solution/tools/DMNSion.js"></script>
+    <script type="text/javascript" src="solution/tools/Reports.js"></script>
+
+    <script type="text/javascript" src="solution/tools/PickTheme.js"></script>
+    <script type="text/javascript" src="solution/tools/UserSettings.js"></script>
+    <script type="text/javascript" src="solution/tools/QM.js"></script>
+    <script type="text/javascript" src="solution/tools/Users.js"></script>
+    <script type="text/javascript" src="solution/tools/Datasets.js"></script>
+    <!-- Fields required for history management -->
+    <form id="history-form" class="x-hidden">
+        <input type="hidden" id="x-history-field" />
+        <iframe id="x-history-frame"></iframe>
+    </form>
+
+</body>
+</html>
