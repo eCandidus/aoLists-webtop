@@ -21,7 +21,7 @@
 my.Tools.UserSettings = function (req, cb) {
     if (!req) req = {};
 
-    var shared = new my.Controls.TBParams({
+    var shared = my.Functions.mergeRecursive(my.Definitions.Shared(), {
         to: req.to
     });
 
@@ -47,11 +47,11 @@ my.Tools.UserSettings = function (req, cb) {
 
     var tbItems = [];
     tbItems.addEntry(new Ext.Toolbar.Fill());
-    tbItems.addEntry(new my.Controls.ToolbarButton(shared, 'Save', 'eciSave', function (button, e) {
+    tbItems.addEntry(new my.Controls.ToolbarButton('Save', 'eciSave', function (button, e) {
         my.AJAX.call('User_Me', my.Controls.getFORMDATA(form), function (result) {
             my.User.logout();
         });
-        button.shared.window.close();
+        my.Helper.closeWindow(button);
     }));
 
     var toolbar = new Ext.Toolbar({
@@ -70,6 +70,7 @@ my.Tools.UserSettings = function (req, cb) {
         closable: true,
         maximizable: false,
         resizable: false,
+        shared: shared,
         items: [{
             region: 'south',
             height: 28,
@@ -82,5 +83,5 @@ my.Tools.UserSettings = function (req, cb) {
         }]
     };
 
-    shared.window = my.App.createWindow(baseDef);
+    my.App.createWindow(baseDef);
 };

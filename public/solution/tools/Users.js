@@ -22,9 +22,9 @@ my.Tools.Users = function (req, cb) {
     my.AJAX.call('Metadata_Get', {}, function (result) {
         req = req || {};
 
-        var shared = new my.Controls.TBParams({
-            to: req.to
-        });
+    var shared = my.Functions.mergeRecursive(my.Definitions.Shared(), {
+        to: req.to
+    });
 
         var flds = [];
 
@@ -79,7 +79,7 @@ my.Tools.Users = function (req, cb) {
         });
 
         var tbItems = [];
-        tbItems.addEntry(new my.Controls.ToolbarButton(shared, 'Remove', 'eciGRemove', function (button, e) {
+        tbItems.addEntry(new my.Controls.ToolbarButton('Remove', 'eciGRemove', function (button, e) {
             my.RTComm.ifonline(function () {
                 Ext.Msg.show({
                     title: 'Removing ' + uname.getValue() + '...',
@@ -90,7 +90,7 @@ my.Tools.Users = function (req, cb) {
                             my.AJAX.call('User_Del', {
                                 uname: uname.getValue()
                             }, function (result) {
-                                button.shared.window.close();
+                                my.Helper.closeWindow(button);
                             });
                         }
                     },
@@ -99,10 +99,10 @@ my.Tools.Users = function (req, cb) {
             });
         }));
         tbItems.addEntry(new Ext.Toolbar.Fill());
-        tbItems.addEntry(new my.Controls.ToolbarButton(shared, 'Save', 'eciSave', function (button, e) {
+        tbItems.addEntry(new my.Controls.ToolbarButton('Save', 'eciSave', function (button, e) {
             my.RTComm.ifonline(function () {
                 my.AJAX.call('User_Set', my.Controls.getFORMDATA(form), function (result) { });
-                button.shared.window.close();
+                my.Helper.closeWindow(button);
             });
         }));
 
@@ -121,6 +121,7 @@ my.Tools.Users = function (req, cb) {
             closable: true,
             maximizable: false,
             resizable: false,
+            shared: shared,
             items: [{
                 region: 'south',
                 height: 28,
@@ -132,8 +133,8 @@ my.Tools.Users = function (req, cb) {
                 items: [form]
             }]
         };
-        baseDef.height = my.Controls.computeeCHeight(baseDef);
+        baseDef.height = my.Controls.computeHeight(baseDef);
 
-        shared.window = my.App.createWindow(baseDef);
+        my.App.createWindow(baseDef);
     });
 };

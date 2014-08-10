@@ -56,15 +56,13 @@ Ext.Desktop = function (app) {
                 manager: windows,
                 minimizable: true,
                 maximizable: true
-            })
-        );
+            }));
+
         win.render(desktopEl);
         win.taskButton = taskbar.addTaskButton(win);
 
         win.cmenu = new Ext.menu.Menu({
-            items: [
-
-            ]
+            items: []
         });
 
         win.animateTarget = win.taskButton.el;
@@ -97,31 +95,31 @@ Ext.Desktop = function (app) {
 
     this.getWindow = function (id) {
         return windows.get(id);
-    }
+    };
 
     this.getWinWidth = function () {
         var width = Ext.lib.Dom.getViewWidth();
         return width < 200 ? 200 : width;
-    }
+    };
 
     this.getWinHeight = function () {
         var height = (Ext.lib.Dom.getViewHeight() - taskbarEl.getHeight());
         return height < 100 ? 100 : height;
-    }
+    };
 
     this.getWinX = function (width) {
-        return (Ext.lib.Dom.getViewWidth() - width) / 2
-    }
+        return (Ext.lib.Dom.getViewWidth() - width) / 2;
+    };
 
     this.getWinY = function (height) {
         return (Ext.lib.Dom.getViewHeight() - taskbarEl.getHeight() - height) / 2;
-    }
+    };
 
     layout();
 
     if (shortcuts) {
         shortcuts.on('click', function (e, t) {
-            if (t = e.getTarget('dt', shortcuts)) {
+            if (t == e.getTarget('dt', shortcuts)) {
                 e.stopEvent();
                 var module = app.getModule(t.id.replace('-shortcut', ''));
                 if (module) {

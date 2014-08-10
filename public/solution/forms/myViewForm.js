@@ -20,7 +20,52 @@
  * target="_blank">http://www.gnu.org/licenses/lgpl.html</a></p>
  *
  */
-/* Support */
+
+my.View.Form = function (req) {
+    var open;
+    // Is it a view?
+    if (req.objid) {
+        // Look for the object already opened
+        Ext.Desktop.getManager().each(function (window) {
+            if (window.objid === req.objid) {
+                // Found
+                open = window;
+            }
+        });
+    }
+    // If already open...
+    if (open) {
+        // Show
+        open.show();
+        open.toFront();
+    } else {
+        // Better have a dataset
+        if (req.objds) {
+            // Is it in cache?
+            var layout = my.Layouts[req.objds];
+            if (!layout) {
+                // Nope, get
+                my.AJAX.call('Layout_Get', req, function (result) {
+                    if (result && result.layout) {
+                        // Standarize
+                        layout = my.Definitions.Form.standarize(result.layout);
+                        // And save
+                        my.Layouts[req.objds] = layout;
+                        // Make the window
+                        my.Generate.Window(req, layout);
+                    }
+                });
+            } else {
+                // Use the cached value to make window
+                my.Generate.Window(req, layout);
+            }
+        }
+    }
+};
+
+my.View.Make = function (req, def) {
+};
+    /* Support */
 my.View.SetID = function (root, req) {
     if (root.eCS) {
         root.req = req;
@@ -53,6 +98,8 @@ my.View.SetID = function (root, req) {
                     case 'string':
                         def['editor'] = new fm.TextField();
                         break;
+                    default:
+                        break;
                     }
                     cm.addEntry(def);
                 }
@@ -71,8 +118,12 @@ my.View.SetID = function (root, req) {
 my.View.SetValue = function (root, value, forcechange) {
     if (value) {
         var comp = root;
-        if (typeof comp === 'string') comp = Ext.getCmp(root);
-        if (typeof comp === 'string') comp = Ext.get(root);
+        if (typeof comp === 'string') {
+            comp = Ext.getCmp(root);
+        }
+        if (typeof comp === 'string') {
+            comp = Ext.get(root);
+        }
         if (comp) {
             if (value.i) {
                 var phy = Ext.get(comp.id);
@@ -106,7 +157,7 @@ my.View.AddValidation = function (root) {
         root.listeners.sync = function (src, html) {
             if (!src.inSync) {
                 src.inSync = true;
-                if (!src.syncCount) src.syncCount = 0;
+                src.syncCount = src.syncCount || 0;
                 if (html !== src.startValue) {
                     src.startValue = html;
                     src.syncCount++;
@@ -149,10 +200,12 @@ my.View.AddValidation = function (root) {
             if (fld.xtype === 'eceditgrid') {
                 fld.fireEvent('render', fld);
             }
-        }
+        };
         root.listeners.render = function (fld) {
             var req = fld.req;
-            if (!req) req = fld.initialConfig.req;
+            if (!req) {
+                req = fld.initialConfig.req;
+            }
             if (req) {
                 var obj = req.obj;
                 if (obj) {
@@ -164,7 +217,9 @@ my.View.AddValidation = function (root) {
             }
         };
         root.listeners.blur = function (fld) {
-            if (fld.eCError) fld.markInvalid();
+            if (fld.eCError) {
+                fld.markInvalid();
+            }
         };
     }
     if (root.xtype) {
@@ -196,7 +251,9 @@ my.View.AddValidation = function (root) {
                 if (item.items && item.items.find) {
                     if (this.findFirst) {
                         var ans = item.items.find(this.findFirst, this);
-                        if (ans) return ans;
+                        if (ans) {
+                            return ans;
+                        }
                     }
                 }
                 return false;
@@ -208,70 +265,16 @@ my.View.AddValidation = function (root) {
                     Ext.EventManager.fireWindowResize();
                 }
                 pnl.items.find(tp.findFirst, pnl);
-            }
+            };
         } else if (root.xtype === 'label') {
-            if (root.ctCls === 'l') root.ctCls = 'x-form-label-left';
+            if (root.ctCls === 'l') {
+                root.ctCls = 'x-form-label-left';
+            }
         }
     }
     if (root.items) {
         for (var item = 0; item < root.items.length; item++) {
             my.View.AddValidation(root.items[item]);
-        }
-    }
-};
-
-my.View.Make = function (req, baselay) {
-    var layout = Ext.apply({}, baselay);
-    if (layout.width !== 0 && layout.height !== 0) {
-        my.View.SetID(layout, req);
-        var panel = my.Viewer(req);
-        var baseDef = {
-            title: Ext.util.Format.ellipsis((req.action || 'View') + ' ' + (req.objdtype || '') + (req.objdesc ? ' - ' + req.objdesc : ''), 75),
-            width: layout.width + 18,
-            height: layout.height + 60,
-            iconCls: 'eci' + req.objds,
-            shim: false,
-            animCollapse: false,
-            constrainHeader: true,
-            maximizable: false,
-            resizable: false,
-            layout: 'fit',
-            closable: false,
-            originalRequest: req,
-            items: [panel]
-        };
-        panel.shared.window = my.App.createWindow(baseDef);
-    }
-};
-
-my.View.Form = function (req) {
-    var open;
-    if (req.objid) {
-        Ext.Desktop.getManager().each(function (window) {
-            if (window.objid === req.objid) {
-                open = window;
-            }
-        });
-    }
-    if (open) {
-        open.show();
-        open.toFront();
-    } else {
-        if (req.objds) {
-            var layout = my.Layouts[req.objds];
-            if (!layout) {
-                my.AJAX.call('Layout_Get', req, function (result) {
-                    if (result && result.layout) {
-                        layout = new my.Form(result.layout);
-                        if (aofn.config.db.cachelayouts) {
-                            my.Layouts[ds] = layout;
-                        }
-                        my.View.Make(req, layout);
-                    }
-                });
-            } else {
-                my.View.Make(req, layout);
-            }
         }
     }
 };

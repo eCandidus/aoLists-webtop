@@ -2,7 +2,7 @@
  * @class my.AJAX
  * @extends
  *
- * A. AJAX layer to comunicate with the eCandidus Web Portal JSON Services
+ * A. AJAX layer to comunicate with the JSON services
  *
  * @author    Jose Gonzalez
  * @copyright (c) 2014, by Candid.Concepts LC
@@ -26,7 +26,6 @@ my.AJAX = new Ext.app.Module({
     hostURL: null,
     rootURL: null,
     callCount: 0,
-    callDepth: 0,
 
     signature: null,
 
@@ -50,31 +49,37 @@ my.AJAX = new Ext.app.Module({
         var xmlrequest = null;
         var callback = cb;
 
+        this.callCount++;
+
         var request = {
-            id: this.callCount++,
+            id: this.callCount,
             signature: this.signature || '',
             method: func,
             params: data
         };
 
         if (typeof (window) !== 'undefined' && window.XMLHttpRequest) {
-            xmlrequest = new XMLHttpRequest(); /* IE7, Safari 1.2, Mozilla 1.0/Firefox, and Netscape 7 */
+            /* IE7, Safari 1.2, Mozilla 1.0/Firefox, and Netscape 7 */
+            xmlrequest = new XMLHttpRequest();
         } else {
-            xmlrequest = new ActiveXObject('Microsoft.XMLHTTP'); /* WSH and IE 5 to IE 6 */
-        };
+            /* WSH and IE 5 to IE 6 */
+            xmlrequest = new ActiveXObject('Microsoft.XMLHTTP');
+        }
 
         if (callback) {
-            if (++this.callDepth == 1) showBusy();
+            my.Functions.showBusy();
+
             xmlrequest.onreadystatechange = function () {
                 if (xmlrequest.readyState === /* complete */ 4) {
                     clearTimeout(xmlto);
-                    if (--my.AJAX.callDepth == 0) showIdle();
+                    my.Functions.showIdle();
+
                     var retValue = null;
                     if (xmlrequest.status === 200) {
                         retValue = xmlrequest.responseText.parseJSON();
                     }
                     if (retValue && retValue.ERROR) {
-                        my.Popup.showAlert(retValue.ERROR, -1, 'Oops...');
+                        my.Popup.showAlert(retValue.ERROR, 'Oops...');
                     }
                     if (callback) {
                         if (callback.isFunction()) {
@@ -92,7 +97,7 @@ my.AJAX = new Ext.app.Module({
                         }
                     }
                 }
-            }
+            };
         }
 
         var xmlto = (function () {

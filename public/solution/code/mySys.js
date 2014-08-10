@@ -1,10 +1,6 @@
-﻿/**
+﻿/**77
  * @class mySys
  * @extends
- *
- * A. Prototypes
- * B. Extensions to Ext found as samples in various websites
- * C. A simple cursor busy function pair
  *
  * @author    Many - Jose Gonzalez
  * @copyright (c) 2014, by Candid.Concepts LC
@@ -22,6 +18,16 @@
  * target="_blank">http://www.gnu.org/licenses/lgpl.html</a></p>
  *
  */
+/* Tool */
+my.Tool = function (name, req, cb) {
+    var fn = my.Tools[name];
+    if (fn && fn.isFunction()) {
+        fn(req, cb);
+    } else {
+        my.Popup.showAlert('Unable to call tool: ' + name);
+    }
+};
+
 /* Window */
 my.Window = {
     findFirst: function (item) {
@@ -33,7 +39,9 @@ my.Window = {
         }
         if (item.items && item.items.find) {
             var ans = item.items.find(this.findFirst, this);
-            if (ans) return ans;
+            if (ans) {
+                return ans;
+            }
         }
         return false;
     },
@@ -43,142 +51,195 @@ my.Window = {
     }
 };
 
-/* From Ext */
+/* Popups */
 my.Popup = {
-    last: null,
-    msgCt: null,
+    // Stack
+    stack: [],
 
-    createBox: function (t, s) {
-        return ['<div class="msg">',
-                '<div class="x-box-tl"><div class="x-box-tr"><div class="x-box-tc"></div></div></div>',
-                '<div class="x-box-ml"><div class="x-box-mr"><div class="x-box-mc"><h3>', t, '</h3>', s, '</div></div></div>',
-                '<div class="x-box-bl"><div class="x-box-br"><div class="x-box-bc"></div></div></div>',
-                '</div>'].join('');
+    // private
+    handleButton: function (dlg, button) {
+        dlg.fireEvent(button.toLowerCase());
+        dlg.close();
     },
 
-    show: function (title, msg, delay) {
-        if (!my.Popup.msgCt) my.Popup.msgCt = Ext.get("msg-div");
-        if (!my.Popup.msgCt) {
-            my.Popup.msgCt = Ext.DomHelper.insertFirst(document.body, {
-                id: "msg-div"
-            }, true);
-        }
-        my.Popup.msgCt.alignTo(document, "t-t");
-        var m = Ext.DomHelper.append(my.Popup.msgCt, {
-            html: my.Popup.createBox(title, msg)
-        }, true);
-        if (delay && delay < 0) {
-            if (my.Popup.last) {
-                my.Popup.last.ghost("t", {
-                    remove: true
-                });
+    create: function (cfg) {
+        cfg.buttonDefs = cfg.buttonDefs || ['Ok'];
+        var baseDef = {
+            autoCreate: true,
+            title: cfg.title,
+            resizable: false,
+            constrain: true,
+            constrainHeader: true,
+            minimizable: false,
+            maximizable: false,
+            stateful: false,
+            modal: false,
+            shim: true,
+            buttonAlign: "center",
+            width: 400,
+            height: 100,
+            minHeight: 80,
+            plain: true,
+            icon: cfg.icon,
+            footer: (cfg.buttonDefs && cfg.buttonDefs.length > 0),
+            closable: true,
+            listeners: {}
+        };
+        baseDef = my.Functions.mergeRecursive(baseDef, cfg);
+        baseDef.listeners.close = function () {
+            for (var i = 0; i < my.Popup.stack.length; i++) {
+                if (this.id == my.Popup.stack[i].id) {
+                    my.Popup.stack.splice(i, 1);
+                    if (i < my.Popup.stack.length) {
+                        my.Popup.repos(i);
+                    }
+                    break;
+                }
             }
-            if (delay < -100) my.Popup.last = m;
-            m.on('click', function () {
-                m.ghost("t", {
-                    remove: true
-                });
-                my.Popup.last = null;
-            });
+        };
 
-            m.slideIn("t");
+        var dlg = new Ext.Window(baseDef);
+
+        if (cfg.buttonDefs) {
+            cfg.buttonDefs.forEach(function (btn) {
+                dlg.addButton(btn, my.Popup.handleButton.createCallback(dlg, btn));
+            });
+        }
+        dlg.render(document.body);
+        dlg.getEl().addClass('x-window-dlg');
+        mask = dlg.mask;
+        bodyEl = dlg.body.createChild({
+            html: '<div class="ext-mb-icon ext-mb-' + (cfg.icon || 'info') + '"></div><div class="ext-mb-content"><span class="ext-mb-text"></span><br /></div>'
+        });
+
+        iconEl = Ext.get(bodyEl.dom.firstChild);
+
+        var contentEl = bodyEl.dom.childNodes[1];
+        msgEl = Ext.get(contentEl.firstChild);
+        bodyEl.createChild({
+            cls: 'x-clear'
+        });
+
+        msgEl.update(cfg.msg || '&#160;');
+
+        var iw = iconEl.getWidth();
+        var mw = msgEl.getWidth() + msgEl.getMargins('lr');
+        var fw = dlg.getFrameWidth('lr');
+        var bw = dlg.body.getFrameWidth('lr');
+        if (Ext.isIE && iw > 0) {
+            //3 pixels get subtracted in the icon CSS for an IE margin issue,
+            //so we have to add it back here for the overall width to be consistent
+            iw += 3;
+        }
+        var w = Math.max(Math.min(cfg.width || iw + mw + fw + bw, this.maxWidth),
+            Math.max(cfg.minWidth, 0));
+        if (Ext.isIE && w == bwidth) {
+            w += 4; //Add offset when the content width is smaller than the buttons.    
+        }
+        dlg.setSize(w, 'auto').center();
+
+        if (cfg.autoclose) {
+            setInterval(function () {
+                dlg.close();
+            }, cfg.autoclose);
+        }
+
+        return dlg;
+    },
+
+    show: function (config, uconfig) {
+        // Apply type congig stuff first
+        var fconfig = Ext.apply({
+            title: 'FYI...'
+        }, config);
+        // And then overwrite with users
+        fconfig = Ext.apply(fconfig, uconfig);
+        // Make the popup
+        var window = my.Popup.create(fconfig);
+        // Add to stack
+        my.Popup.stack.push(window);
+        // Reposition
+        my.Popup.repos(my.Popup.stack.length - 1);
+        //
+        window.show();
+    },
+
+    repos: function (at) {
+        // The window
+        var window = my.Popup.stack[at];
+        // Get the desktop
+        var desktop = my.App.getDesktop();
+        // Location
+        var x, y;
+        //
+        var xadjust = 20;
+        var yadjust = 40;
+        // Find last in stack
+        if (at) {
+            var last = my.Popup.stack[at - 1];
+            x = desktop.getWinWidth() - (window.width + xadjust);
+            y = last.y - (window.height + 10);
+            if (y < 100) {
+                y = desktop.getWinHeight() - (window.height + yadjust);
+            }
         } else {
-            m.slideIn("t").pause(delay || 2).ghost("t", {
-                remove: true
+            x = desktop.getWinWidth() - (window.width + xadjust);
+            y = desktop.getWinHeight() - (window.height + yadjust);
+        }
+        // Next
+        at++;
+        // Do we need to move?
+        if (window.x != x || window.y != y) {
+            window.getEl().moveTo(x, y, true, 0.35, function () {
+                window.setPosition(x, y);
+                // Keep on trucking
+                if (at < my.Popup.stack.length) {
+                    my.Popup.repos(at);
+                }
             });
         }
     },
 
-    close: function () {
-        if (my.Popup.last) {
-            my.Popup.last.ghost("t", {
-                remove: true
-            });
-            my.Popup.last = null;
-        }
+    removeIfIcon: function (icon) {
+        my.Popup.stack.forEach(function (dlg) {
+            if (dlg.icon == icon) {
+                dlg.close();
+            }
+        });
     },
 
-    showQM: function (msg) {
-        my.Popup.show('Quick Message from ' + msg.from, msg.msg, my.Constants.QMDelay);
+    showQM: function (msg, ucfg) {
+        my.Popup.show({
+            title: 'Quick Message from ' + msg.from,
+            from: msg.from,
+            msg: msg.message,
+            icon: 'qm',
+            buttonDefs: ['Reply', 'Ok'],
+            listeners: {
+                reply: function () {
+                    my.Tools.QMRespond({
+                        to: this.from
+                    });
+                }
+            }
+        }, ucfg);
     },
 
-    showServerAlert: function (msg) {
-        my.Popup.show('Alert from aoLists Server', msg, my.Constants.QMDelay);
+    showServerAlert: function (msg, ucfg) {
+        my.Popup.removeIfIcon('aolists');
+        my.Popup.show({
+            title: 'Alert from aoLists Server',
+            msg: msg,
+            icon: 'aolists'
+        }, ucfg);
     },
 
     showAlert: function (msg, delay, title) {
-        my.Popup.show(title || 'FYI...', msg, delay);
+        my.Popup.show({
+            title: 'FYI...',
+            msg: msg,
+            icon: 'warning',
+            autoclose: 8000
+        });
     }
-};
-
-/* Prototypes */
-String.prototype.replaceAll = function (s1, s2) {
-    return this.replace(new RegExp(s1, "g"), s2);
-};
-
-String.prototype.cFormat = function () {
-    var str = this;
-    for (var i = 0, len = arguments.length; i < len; i++) str = ('{' + i + '}').replaceAll(arguments[i]);
-    return str;
-};
-
-String.prototype.startsWith = function (str) {
-    return (this.match("^" + str) == str)
-};
-
-String.prototype.endsWith = function (str) {
-    return (this.match(str + "$") == str)
-};
-
-Object.prototype.isFunction = function () {
-    return (typeof (this) === 'function');
-};
-
-Object.prototype.addEntry = function (a) {
-    this[this.length] = a;
-};
-
-/* ??? */
-Ext.form.Field.prototype.msgTarget = 'side';
-
-/* Pseudo Wait Cursor */
-showBusy = function () {
-    Ext.get('waitGraphics').show();
-};
-
-showIdle = function () {
-    Ext.get('waitGraphics').hide();
-};
-
-/* Converts data stream to JSON store */
-my.Functions.MakeLocalStore = function (req, cfg) {
-    var localReader = new Ext.data.JsonReader();
-    if (req.data) localReader.read(req.data);
-
-    var localStore = new Ext.data.JsonStore(Ext.apply({
-        reader: localReader,
-        sortCol: req.sortCol,
-        sortAD: req.sortAD || 'ASC'
-    }, cfg));
-
-    return localStore;
-};
-
-/* Display an image */
-my.Functions.setValueImage = function (ele, value) {
-    if (Ext.isIE) {
-        ele.update('<img src="' + my.AJAX.rootURL + '?' + Ext.urlEncode({
-            ecimage: value
-        }) + '"  />');
-    } else {
-        ele.update('<img src="data:image/png;base64,' + value + '"  />');
-    }
-};
-
-/* Print a file */
-my.Functions.print = function (url, title) {
-    var type = page.substring(title.lastIndexOf('.') + 1);
-    var gadget = new cloudprint.Gadget();
-    gadget.setPrintDocument('application/' + type, title, url);
-    gadget.openPrintDialog();
 };

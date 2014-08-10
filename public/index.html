@@ -18,7 +18,7 @@
 <body>
     <div id="x-desktop" style="overflow:auto">
         <div id="Div1" style="font-size: x-large; color: white; vertical-align: middle">
-            <img id="x-logo" src="images/aoLists.png" alt="eCandidus Web Portal;vertical-align: bottom" />
+            <img id="x-logo" src="images/aolists.png" alt="eCandidus Web Portal;vertical-align: bottom" />
             aoLists Webtop
             <a href="http://extjs.com" target="_blank" style="margin:5px; float:right;">
                 <img id="waitGraphics" src="images/extanim32.gif" alt="Please wait..." />
@@ -41,11 +41,13 @@
     <!-- GC -->
     <!-- CORE LIBS -->
     <script type="text/javascript" src="ext/ext-base-min.js"></script>
-    <script type="text/javascript" src="ext/ext-all-ecandidus-min.js"></script>
+    <script type="text/javascript" src="ext/ext-all-ecandidus.js"></script>
     <!-- CDN -->
-    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <!-- <script type="text/javascript" src="/socket.io/socket.io.js"></script> -->
     <script type="text/javascript" src="https://www.google.com/cloudprint/client/cpgadget.js"></script>
     <!-- OTHER LIBS -->
+    <script type="text/javascript" src="ext/tp/socket.io.js"></script>
+    <script type="text/javascript" src="ext/tp/json.js"></script>
     <script type="text/javascript" src="ext/tp/json.js"></script>
     <script type="text/javascript" src="ext/tp/Ext.ux.util.js"></script>
     <script type="text/javascript" src="ext/tp/Ext.ux.form.DateTime.js"></script>
@@ -80,24 +82,22 @@
     <script type="text/javascript" src="solution/forms/myDialogs.js"></script>
     <script type="text/javascript" src="solution/components/myControls.js"></script>
     <script type="text/javascript" src="solution/components/mySelect.js"></script>
-    <script type="text/javascript" src="solution/components/myViewer.js"></script>
+    <script type="text/javascript" src="solution/builder/myHelpers.js"></script>
+    <script type="text/javascript" src="solution/builder/myDefinitions.js"></script>
+    <script type="text/javascript" src="solution/builder/myGenerator.js"></script>
     <script type="text/javascript" src="solution/forms/mySelectForm.js"></script>
     <script type="text/javascript" src="solution/forms/myViewForm.js"></script>
     <script type="text/javascript" src="solution/objects/myMenu.js"></script>
     <script type="text/javascript" src="solution/objects/myApp.js"></script>
     <!-- VISUAL -->
-    <script type="text/javascript" src="solution/visuals/aoVisualHolder.js"></script>
-    <script type="text/javascript" src="solution/visuals/aoVisualTextField.js"></script>
+    <script type="text/javascript" src="solution/visuals/aoVisualBasic.js"></script>
+    <script type="text/javascript" src="solution/visuals/aoVisualFields.js"></script>
     <!-- EXTENSIONS -->
     <script type="text/javascript" src="solution/tools/WhereUsed.js"></script>
-    <script type="text/javascript" src="solution/tools/History.js"></script>
     <script type="text/javascript" src="solution/tools/Attachments.js"></script>
     <script type="text/javascript" src="solution/tools/Merge.js"></script>
     <script type="text/javascript" src="solution/tools/Convert.js"></script>
     <script type="text/javascript" src="solution/tools/Calendar.js"></script>
-    <script type="text/javascript" src="solution/tools/DocMgr.js"></script>
-    <script type="text/javascript" src="solution/tools/External.js"></script>
-    <script type="text/javascript" src="solution/tools/DMNSion.js"></script>
     <script type="text/javascript" src="solution/tools/Reports.js"></script>
 
     <script type="text/javascript" src="solution/tools/PickTheme.js"></script>

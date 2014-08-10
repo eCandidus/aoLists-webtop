@@ -13,7 +13,8 @@
     "crypto": ">=0.0.3",
     "request":  ">=2.36.0",
     "dequeue":  ">=1.0.3",
-    "socket.io":  ">=1.0.6"
+    "socket.io":  ">=1.0.6",
+    "socket.io-client":  ">=1.0.6"
   },
   "description": "Web interface for aoLists",
   "directories": {
@@ -38,7 +39,7 @@
   "scripts": {
     "start": "node server.js"
   },
-  "version": "0.1.3",
+  "version": "0.1.9",
   "main": "server.js",
   "license": "GPL"
 }

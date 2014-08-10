@@ -21,9 +21,9 @@ var fs = require('fs'),
     cluster = require('cluster');
 
 var config = {
-    'debug': false, // turn debug messages on/off
+    'debug': true, // turn debug messages on/off
 
-    'limitThreads': 1, // number of threads (0 = all, >0 = number of threads, <0 = #cpus not used)
+    'limitThreads': 0, // number of threads (0 = all, >0 = number of threads, <0 = #cpus not used)
 
     'id': null, // The site ID
 
@@ -41,23 +41,26 @@ var config = {
         }
     },
 
-    'sessionSec': 'mysecretgoeshere', // key to encode session with
+    'sessionSec': null, // key to encode session with (if null one will be created on launch)
+
+    'enableDBEXCHG': false, // enable notification support at the aoLists-db level
 
     'db': {
         'host': 'localhost', // host address for MongoDB server
         'port': 42324, // port
+        'useSSL': false, // Use SSL when connecting to server
         'defaultdb': 'aoLists', // default database to use
-        'cachelayouts': true // cache layots in memory
+        'cachelayouts': true // cache layouts in memory
     }
 };
-try {
-    // config.json hold CHANGES to the settings above
-    var chgs = aofn.readFILE('/config.json');
-    if (chgs) {
-        config = aofn.mergeRecursive(config, JSON.parse(chgs));
+var file = process.cwd() + '/config.json';
+if (fs.existsSync(file)) {
+    try {
+        // config.json hold CHANGES to the settings above
+        config = aofn.mergeRecursive(config, JSON.parse(fs.readFileSync(file)));
+    } catch (e) {
+        console.log('Unable to read "' + process.cwd() + '/config.json' + '" - ' + e);
     }
-} catch (e) {
-    console.log('Unable to read "' + process.cwd() + '/config.json' + '" - ' + e);
 }
 aofn.config = config;
 
@@ -71,6 +74,11 @@ require('./lib/util_login');
 require('./lib/util_user');
 require('./lib/util_db');
 require('./lib/util_socket');
+
+// Session secret
+if (!aofn.config.sessionSec) {
+    aofn.config.sessionSec = aofn.UUID();
+}
 
 // Make the site id
 var idpath = '/public';
@@ -127,10 +135,6 @@ if (!aofn.config.debug && numCPUs > 1 && cluster.isMaster) {
     // Load routes
     require('./lib/webservices');
     require('./lib/httpserver');
-
-    //process.on('exit', function (){
-    //	console.log('Goodbye!');
-    //});
 
     // Error handler - no code passed back
     if (!aofn.config.debug) {

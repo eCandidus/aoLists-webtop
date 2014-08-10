@@ -30,6 +30,7 @@
 .eciOK,button.eciOK{background-image:url(../images/my/ec0030.png);}
 .eciCancel,button.eciCancel{background-image:url(../images/my/ec0031.png);}
 .eciSave,button.eciSave{background-image:url(../images/my/ec0043.png);}
+.eciSaveAs,button.eciSaveAs{background-image:url(../images/my/ec0016.png);}
 .eciGAdd,button.eciGAdd{background-image:url(../images/add.png);}
 .eciGRemove,button.eciGRemove{background-image:url(../images/remove.png);}
 .eciWorkflow,button.eciWorkflow{background-image:url(../images/my/ec0041.png);}
@@ -43,3 +44,5 @@
 .eciQMSend,button.eciQMSend,.eciQM,button.eciQM{background-image:url(../images/my/ec0051.png);}
 .eciWho,button.eciWho,.eciassociates,button.eciassociates{background-image:url(../images/my/ec0039.png);}
 .eciReports,button.eciReports,.eciView,button.eciView{background-image:url(../images/my/ec0015.png);}
+.ext-mb-qm{background:transparent url(../images/my/qm.gif) no-repeat top left;}
+.ext-mb-aolists{background:transparent url(../images/my/aolists.gif) no-repeat top left;}

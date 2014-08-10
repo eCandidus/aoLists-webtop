@@ -47,6 +47,7 @@ my.Functions.MergeCallBack = function (result) {
                     title: rData.title,
                     prompt: rData.prompt
                 }, function (button, e) {
+                    // TBD shared
                     if (buton == 'OK') {
                         my.AJAX.call('MergeInput', {
                             mergeid: button.shared.req.mergeid,
@@ -57,7 +58,7 @@ my.Functions.MergeCallBack = function (result) {
                             mergeid: button.shared.req.mergeid
                         });
                     }
-                    button.shared.window.close();
+                    my.Helper.closeWindow(button);
                 });
                 break;
             case 'choice':
@@ -67,6 +68,7 @@ my.Functions.MergeCallBack = function (result) {
                     prompt: rData.prompt,
                     choices: rData.choice
                 }, function (button, e) {
+                    // TBD shared
                     if (buton == 'OK') {
                         my.AJAX.call('MergeInput', {
                             mergeid: button.shared.req.mergeid,
@@ -77,7 +79,7 @@ my.Functions.MergeCallBack = function (result) {
                             mergeid: button.shared.req.mergeid
                         });
                     }
-                    button.shared.window.close();
+                    my.Helper.closeWindow(button);
                 });
                 break;
             }

@@ -41,7 +41,7 @@ my.User = new Ext.app.Module({
         my.App.desktop.taskbar.startBtn.disabled = true;
         my.User.userName = null;
         my.AJAX.call('Access_Out');
-        my.Popup.showAlert('Thank you for using aoLists Webtop', -1, 'Good Bye');
+        my.Popup.showAlert('Thank you for using aoLists Webtop', 'Good Bye');
         (this.home).defer(3000);
     },
     home: function () {
@@ -52,15 +52,17 @@ my.User = new Ext.app.Module({
 /* History */
 Ext.History.init();
 
+/* Default type */
+Ext.Container.defaultType = 'aostring';
 
 /* Start Point */
 Ext.onReady(function () {
     Ext.QuickTips.init();
     my.AJAX.hello(function (result) {
-        if (result) my.AJAX.ID = result.id
+        if (result) my.Options = Ext.apply(my.Options, result);
     });
 
-    showIdle();
+    my.Functions.showIdle();
 
     var login = new Ext.FormPanel({
         labelWidth: 80,
@@ -88,8 +90,8 @@ Ext.onReady(function () {
             formBind: true,
             handler: function () {
                 Ext.get('loginButton').fadeOut();
-                var un = Ext.get('loginUsername').getValue();
-                var up = Ext.get('loginPassword').getValue();
+                var un = Ext.get('loginUsername').getValue().toLowerCase();
+                var up = Ext.get('loginPassword').getValue().toLowerCase();
                 my.AJAX.call('Access_In', {
                     userNickname: un,
                     password: up
@@ -129,9 +131,6 @@ Ext.onReady(function () {
                         });
                         win.close();
                         my.App = new Ext.app.App({
-                            init: function () {
-                                //my.Tools.QMReceiveSetup();
-                            },
                             getModules: function () {
                                 return my.User.menu;
                             },
@@ -156,8 +155,11 @@ Ext.onReady(function () {
                                 return win;
                             }
                         });
+                        my.Popup.showServerAlert('Welcome ' + my.User.userName, {
+                            autoclose: 3000
+                        });
                     } else {
-                        my.Popup.showAlert('Login failed!');
+                        //my.Popup.showAlert('Login failed!');
                         login.getForm().reset();
                         Ext.get('loginButton').fadeIn();
 
@@ -224,7 +226,7 @@ my.RTComm = {
                 }
                 if (my.RTComm.online) {
                     my.RTComm.online = false;
-                    my.Popup.showServerAlert('Server is not available!');
+                    my.Popup.showServerAlert('Server is down!');
                 }
             });
             my.RTComm.socket.on('connect', function (msg) {
@@ -236,10 +238,10 @@ my.RTComm = {
                     my.RTComm.socket.emit('in', {
                         'name': my.RTComm.user
                     });
-                if (!my.RTComm.online) {
-                    my.RTComm.online = true;
-                    my.Popup.showServerAlert('Server is back online!');
-                }
+                    if (!my.RTComm.online) {
+                        my.RTComm.online = true;
+                        my.Popup.showServerAlert('Server is back up!');
+                    }
                 }
             });
         }
@@ -259,12 +261,13 @@ my.RTComm = {
         }
     },
 
-    qm: function (to, msg) {
+    qm: function (to, msg, subj) {
         if (my.RTComm.socket && my.RTComm.user) {
             my.RTComm.socket.emit('qm', {
                 'from': my.RTComm.user,
                 'to': to,
-                'msg': msg
+                'message': msg,
+                'subject': subj
             });
         }
     }

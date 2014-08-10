@@ -38,7 +38,7 @@ my.Dialogs.Input = function (req, cb) {
         anchor: '100%'
     });
 
-    var shared = new my.Controls.TBParams({
+    var shared = my.Functions.mergeRecursive(my.Definitions.Shared(), {
         req: req,
         field: msg
     });
@@ -51,8 +51,8 @@ my.Dialogs.Input = function (req, cb) {
 
     var tbItems = [];
     tbItems.addEntry(new Ext.Toolbar.Fill());
-    tbItems.addEntry(new my.Controls.ToolbarButton(shared, 'Cancel', 'eciCancel', cb));
-    tbItems.addEntry(new my.Controls.ToolbarButton(shared, 'OK', 'eciOK', cb));
+    tbItems.addEntry(new my.Controls.ToolbarButton('Cancel', 'eciCancel', cb));
+    tbItems.addEntry(new my.Controls.ToolbarButton('OK', 'eciOK', cb));
 
     var toolbar = new Ext.Toolbar({
         items: tbItems
@@ -70,6 +70,7 @@ my.Dialogs.Input = function (req, cb) {
         closable: true,
         maximizable: false,
         resizable: true,
+        shared: shared,
         items: [{
             region: 'south',
             height: 28,
@@ -82,7 +83,7 @@ my.Dialogs.Input = function (req, cb) {
         }]
     };
 
-    shared.window = my.App.createWindow(baseDef);
+    my.App.createWindow(baseDef);
 };
 
 my.Dialogs.Choice = function (req, cb) {
@@ -97,7 +98,7 @@ my.Dialogs.Choice = function (req, cb) {
         })
     });
 
-    var shared = new my.Controls.TBParams({
+    var shared = my.Functions.mergeRecursive(my.Definitions.Shared(), {
         req: req,
         field: list
     });
@@ -110,8 +111,8 @@ my.Dialogs.Choice = function (req, cb) {
 
     var tbItems = [];
     tbItems.addEntry(new Ext.Toolbar.Fill());
-    tbItems.addEntry(new my.Controls.ToolbarButton(shared, 'Cancel', 'eciCancel', cb));
-    tbItems.addEntry(new my.Controls.ToolbarButton(shared, 'OK', 'eciOK', cb));
+    tbItems.addEntry(new my.Controls.ToolbarButton('Cancel', 'eciCancel', cb));
+    tbItems.addEntry(new my.Controls.ToolbarButton('OK', 'eciOK', cb));
 
     var toolbar = new Ext.Toolbar({
         items: tbItems
@@ -129,6 +130,7 @@ my.Dialogs.Choice = function (req, cb) {
         closable: true,
         maximizable: false,
         resizable: true,
+        shared: shared,
         items: [{
             region: 'south',
             height: 28,
@@ -141,7 +143,7 @@ my.Dialogs.Choice = function (req, cb) {
         }]
     };
 
-    shared.window = my.App.createWindow(baseDef);
+    my.App.createWindow(baseDef);
     list.store.load({
         params: {
             start: 0,

@@ -39,13 +39,19 @@ my.BrowserWindow = function (anchor, options) {
 
     var args = '';
 
-    if (!options.name) options.name = my.Constants.NextWindowID();
+    if (!options.name) {
+        options.name = my.Constants.NextWindowID();
+    }
     if (options.fullscreen) {
         args += ",width=" + screen.availWidth;
         args += ",height=" + screen.availHeight;
     } else {
-        if (options.height) args += ",height=" + options.height;
-        if (options.width) args += ",width=" + options.width;
+        if (options.height) {
+            args += ",height=" + options.height;
+        }
+        if (options.width) {
+            args += ",width=" + options.width;
+        }
         if (options.center) {
             options.y = Math.floor((screen.availHeight - (options.height || screen.height)) / 2) - (screen.height - screen.availHeight);
             options.x = Math.floor((screen.availWidth - (options.width || screen.width)) / 2) - (screen.width - screen.availWidth);
@@ -56,12 +62,22 @@ my.BrowserWindow = function (anchor, options) {
         }
     }
 
-    if (options.scrollbars) args += ",scrollbars=1";
-    if (options.menubar) args += ",menubar=1";
-    if (options.locationbar) args += ",location=1";
-    if (options.resizable) args += ",resizable=1";
+    if (options.scrollbars) {
+        args += ",scrollbars=1";
+    }
+    if (options.menubar) {
+        args += ",menubar=1";
+    }
+    if (options.locationbar) {
+        args += ",location=1";
+    }
+    if (options.resizable) {
+        args += ",resizable=1";
+    }
 
-    if (args.length > 0) args = args.substring(1);
+    if (args.length > 0) {
+        args = args.substring(1);
+    }
 
     return window.open(anchor, options.name, args);
-}
+};

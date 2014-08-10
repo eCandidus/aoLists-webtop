@@ -21,7 +21,7 @@
 my.Tools.Datasets = function (req, cb) {
     req = req || {};
 
-    var shared = new my.Controls.TBParams({
+    var shared = my.Functions.mergeRecursive(my.Definitions.Shared(), {
         to: req.to
     });
 
@@ -38,8 +38,10 @@ my.Tools.Datasets = function (req, cb) {
         }),
         listeners: {
             'select': function () {
-                my.AJAX.call('Dataset_Get', my.Controls.getFORMDATA(form), function (result) {
-                    my.Controls.putFORMDATA(form, result);
+                my.Functions.busy(function () {
+                    my.AJAX.call('Dataset_Get', my.Controls.getFORMDATA(form), function (result) {
+                        my.Controls.putFORMDATA(form, result);
+                    });
                 });
             }
         }
@@ -87,25 +89,33 @@ my.Tools.Datasets = function (req, cb) {
     });
 
     var tbItems = [];
-    tbItems.addEntry(new my.Controls.ToolbarButton(shared, 'Edit Layout', 'eciAdd', function (button, e) {
-        // TBD
+    tbItems.addEntry(new my.Controls.ToolbarButton('Edit Layout', 'eciAdd', function (button, e) {
+        my.View.Form({
+            objds: uds.getValue(),
+            objdsdesc: desc.getValue(),
+            indefine: true,
+            menuIcon: icon.getValue(),
+            action: 'Configure'
+        });
     }));
     tbItems.addEntry('-');
-    tbItems.addEntry(new my.Controls.ToolbarButton(shared, 'Download Definition', 'eciSILKdatabasesave', function (button, e) {
+    tbItems.addEntry(new my.Controls.ToolbarButton('Download Definition', 'eciSILKdatabasesave', function (button, e) {
         my.RTComm.ifonline(function () {
             my.BrowserWindow(my.AJAX.rootURL + 'dsdef.download?' + Ext.urlEncode(my.Controls.getFORMDATA(form)));
         });
     }));
-    tbItems.addEntry(new my.Controls.ToolbarUpload(shared, 'Upload Definition', 'eciSILKdatabaseadd', 'dsdef.upload', function (button, e) {
+    tbItems.addEntry(new my.Controls.ToolbarUpload('Upload Definition', 'eciSILKdatabaseadd', 'dsdef.upload', function (button, e) {
         my.RTComm.ifonline(function () {
-            var ds = button.uploader.store.getAt(0).data.passback;
-            my.AJAX.call('Dataset_Get', { 'ds': ds }, function (result) {
-                my.Controls.putFORMDATA(form, result);
+            my.Functions.busy(function () {
+                var ds = button.uploader.store.getAt(0).data.passback;
+                my.AJAX.call('Dataset_Get', { 'ds': ds }, function (result) {
+                    my.Controls.putFORMDATA(form, result);
+                });
             });
         });
     }));
     tbItems.addEntry('-');
-    tbItems.addEntry(new my.Controls.ToolbarButton(shared, 'Remove', 'eciGRemove', function (button, e) {
+    tbItems.addEntry(new my.Controls.ToolbarButton('Remove', 'eciGRemove', function (button, e) {
         my.RTComm.ifonline(function () {
             Ext.Msg.show({
                 title: 'Removing ' + uds.getValue() + '...',
@@ -113,10 +123,12 @@ my.Tools.Datasets = function (req, cb) {
                 buttons: Ext.Msg.OKCANCEL,
                 fn: function (btn) {
                     if (btn === 'ok') {
-                        my.AJAX.call('Dataset_Del', {
-                            uds: uds.getValue()
-                        }, function (result) {
-                            button.shared.window.close();
+                        my.Functions.busy(function () {
+                            my.AJAX.call('Dataset_Del', {
+                                uds: uds.getValue()
+                            }, function (result) {
+                                my.Helper.closeWindow(button);
+                            });
                         });
                     }
                 },
@@ -125,10 +137,12 @@ my.Tools.Datasets = function (req, cb) {
         });
     }));
     tbItems.addEntry(new Ext.Toolbar.Fill());
-    tbItems.addEntry(new my.Controls.ToolbarButton(shared, 'Save', 'eciSave', function (button, e) {
+    tbItems.addEntry(new my.Controls.ToolbarButton('Save', 'eciSave', function (button, e) {
         my.RTComm.ifonline(function () {
-            my.AJAX.call('Dataset_Set', my.Controls.getFORMDATA(form), function (result) { });
-            button.shared.window.close();
+            my.Functions.busy(function () {
+                my.AJAX.call('Dataset_Set', my.Controls.getFORMDATA(form), function (result) { });
+                my.Helper.closeWindow(button);
+            });
         });
     }));
 
@@ -147,6 +161,7 @@ my.Tools.Datasets = function (req, cb) {
         closable: true,
         maximizable: false,
         resizable: true,
+        shared: shared,
         items: [{
             region: 'south',
             height: 28,
@@ -158,7 +173,7 @@ my.Tools.Datasets = function (req, cb) {
             items: [form]
         }]
     };
-    baseDef.height = my.Controls.computeeCHeight(baseDef);
+    baseDef.height = my.Controls.computeHeight(baseDef);
 
-    shared.window = my.App.createWindow(baseDef);
+    my.App.createWindow(baseDef);
 };

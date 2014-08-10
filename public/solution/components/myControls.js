@@ -20,14 +20,6 @@
  * target="_blank">http://www.gnu.org/licenses/lgpl.html</a></p>
  *
  */
-/* Button Parameters */
-my.Controls.TBParams = function (req) {
-    return Ext.apply({
-        object: {},
-        window: null,
-        activeTab: null
-    }, req);
-};
 
 /* Get the data in the form */
 my.Controls.getFORMDATA = function (ctl) {
@@ -62,30 +54,30 @@ my.Controls.putFORMDATA = function (ctl, values) {
 };
 
 /* Height calculator */
-my.Controls.computeeCHeight = function () {
-    var ans = 30;
+my.Controls.computeHeight = function () {
+    var ans = 38;
     for (var i = 0; i < arguments.length; i++) {
-        ans += my.Controls.computeeCHeightSub(arguments[i]);
+        ans += my.Controls.computeHeightSub(arguments[i]);
     }
     return ans;
 };
 
 /* Height calculator */
-my.Controls.computeeCHeightSub = function (ctl) {
+my.Controls.computeHeightSub = function (ctl) {
     var ans = 0;
     if (ctl) {
         if (ctl.height) {
             ans += ctl.height;
         } else if (Array.isArray(ctl.items)) {
             ctl.items.forEach(function (entry) {
-                ans += my.Controls.computeeCHeightSub(entry);
+                ans += my.Controls.computeHeightSub(entry);
             });
         } else if (ctl.items && Array.isArray(ctl.items.items)) {
             ctl.items.items.forEach(function (entry) {
-                ans += my.Controls.computeeCHeightSub(entry);
+                ans += my.Controls.computeHeightSub(entry);
             });
         } else {
-            ans += ctl.height || 30;
+            ans += ctl.height || 28;
             if (ctl.eCHeightAdjust) {
                 ans += ctl.eCHeightAdjust;
             }
@@ -94,17 +86,24 @@ my.Controls.computeeCHeightSub = function (ctl) {
     return ans;
 };
 
-/* Icon Buttons */
-my.Controls.ToolbarButton = function (shr, buttontext, buttonicon, cb, istoggled) {
+/* Toolbar */
+my.Controls.ToolbarButton = function (buttontext, buttonicon, cb, istoggled) {
     var ans = new Ext.Toolbar.Button({
-        shared: shr,
         tooltip: buttontext,
         iconCls: buttonicon || 'magnifier',
         cls: 'x-btn-icon',
         handler: cb,
         enableToggle: istoggled !== null,
         pressed: istoggled === true,
-        beganPressed: istoggled === true
+        beganPressed: istoggled === true,
+        listeners: {
+            afterrender: function () {
+                var a = 1;
+            },
+            beforerender: function () {
+                var a = 1;
+            }
+        }
     });
 
     ans.on('toggle', function (btn, pressed) {
@@ -116,15 +115,13 @@ my.Controls.ToolbarButton = function (shr, buttontext, buttonicon, cb, istoggled
     return ans;
 };
 
-/* Upload Buttons */
-my.Controls.ToolbarUpload = function (shr, buttontext, buttonicon, url, cb) {
+my.Controls.ToolbarUpload = function (buttontext, buttonicon, url, cb) {
     var ans = new Ext.ux.ToolbarUpload({
         addIconTooltip: buttontext,
         addIconCls: buttonicon || 'magnifier',
         cls: 'x-btn-icon',
         url: url,
-        handler: cb,
-        shared: shr
+        handler: cb
     });
 
     ans.on('toggle', function (btn, pressed) {
@@ -136,10 +133,8 @@ my.Controls.ToolbarUpload = function (shr, buttontext, buttonicon, url, cb) {
     return ans;
 };
 
-/* Text Buttons */
-my.Controls.ToolbarTextButton = function (shr, buttontext, cb) {
+my.Controls.ToolbarTextButton = function (buttontext, cb) {
     var ans = new Ext.Toolbar.Button({
-        shared: shr,
         text: buttontext,
         cls: 'x-btn-text',
         handler: cb
@@ -147,6 +142,13 @@ my.Controls.ToolbarTextButton = function (shr, buttontext, cb) {
 
     return ans;
 };
+
+Ext.form.CenterLabel = Ext.extend(Ext.form.Label, {
+    style: 'text-align: center',
+    cls: 'x-window-mc x-form-item',
+    eCHeightAdjust: -26
+});
+Ext.reg('centerlabel', Ext.form.CenterLabel);
 
 Ext.ns('Ext.ux.form');
 
@@ -185,17 +187,17 @@ Ext.reg('echtmld', Ext.ux.form.ecHTMLDisplay);
  */
 Ext.ux.form.ecEditGrid = function (cfg) {
 
-    this.addEvents(
-        /**
-         * @event change
-         * fired when data has changed
-         * @param {Object} data
-         */
-        'change'
-    );
+    /**
+     * @event change
+     * fired when data has changed
+     * @param {Object} data
+     */
+    this.addEvents('change');
 
     var localReader = new Ext.data.JsonReader();
-    if (cfg.data) localReader.read(cfg.data);
+    if (cfg.data) {
+        localReader.read(cfg.data);
+    }
 
     var localStore = new Ext.data.JsonStore(Ext.apply({
         reader: localReader,
@@ -209,7 +211,7 @@ Ext.ux.form.ecEditGrid = function (cfg) {
     }
 
     this.store = localStore;
-    this.clicksToEdit = 1
+    this.clicksToEdit = 1;
     this.stripeRows = true;
     this.tbar = [{
         xtype: 'tbfill'
@@ -220,15 +222,15 @@ Ext.ux.form.ecEditGrid = function (cfg) {
             var localcm = this.colModel;
             if (!localcm.emptyRecord) {
                 var eRec = [];
-                for (var i = 0, len = localcm.getColumnCount(); i < len; i++) {
+                for (var j = 0, jlen = localcm.getColumnCount(); j < jlen; j++) {
                     eRec.addEntry({
-                        name: localcm.getColumnHeader(i)
+                        name: localcm.getColumnHeader(j)
                     });
                 }
                 localcm.emptyRecord = Ext.data.Record.create(eRec);
             }
             var eValues = {};
-            for (var i = 0, len = localcm.getColumnCount(); i < len; i++) {
+            for (var i = 0, ilen = localcm.getColumnCount(); i < ilen; i++) {
                 eValues[localcm.getColumnHeader(i)] = null;
             }
             this.stopEditing();
@@ -250,7 +252,7 @@ Ext.ux.form.ecEditGrid = function (cfg) {
                 });
             }
         }
-    }]
+    }];
 
     this.setValue = function (value) {
         if (value) {
@@ -333,7 +335,9 @@ Ext.ux.form.ecForm = Ext.extend(Ext.Panel, {
                     var el = tb.getEl();
                     if (el) {
                         var xwidth = el.getComputedWidth();
-                        if (!viewer.rendered) xwidth = 0;
+                        if (!viewer.rendered) {
+                            xwidth = 0;
+                        }
                         var param = {
                             fld: this.id,
                             page: pageno,
@@ -351,11 +355,13 @@ Ext.ux.form.ecForm = Ext.extend(Ext.Panel, {
             },
             setInternal: function (src, value) {
                 if (value) {
-                    if (!value.page) value = value.v;
+                    if (!value.page) {
+                        value = value.v;
+                    }
                     var newcount = value.count;
                     if (typeof newcount != 'undefined') {
-                        for (var i = 0, length = src.pages.length; i < length; i++) {
-                            src.remove(src.id + '-' + i);
+                        for (var j = 0, length = src.pages.length; j < length; j++) {
+                            src.remove(src.id + '-' + j);
                         }
                         src.pages = [];
                         for (var i = 0; i < newcount; i++) {
@@ -368,7 +374,7 @@ Ext.ux.form.ecForm = Ext.extend(Ext.Panel, {
                         }
                         //if (newcount) setInterval.setActiveTab(src.id + '-0');
                     }
-                    var xpage = value.page
+                    var xpage = value.page;
                     if (typeof xpage != 'undefined') {
                         src.pages[xpage] = value.v;
                     }
@@ -390,10 +396,3 @@ Ext.ux.form.ecForm = Ext.extend(Ext.Panel, {
 
 // register xtype
 Ext.reg('ecform', Ext.ux.form.ecForm);
-
-Ext.form.CenterLabel = Ext.extend(Ext.form.Label, {
-    style: 'text-align: center',
-    cls: 'x-window-mc x-form-item',
-    eCHeightAdjust: -30
-});
-Ext.reg('centerlabel', Ext.form.CenterLabel);

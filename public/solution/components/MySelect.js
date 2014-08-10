@@ -273,10 +273,14 @@ my.Select.Array = function (req) {
         };
         var rowData = grd.store.getAt(row);
         if (rowData) {
-            if (rowData.id) params['id'] = rowData.id;
+            if (rowData.id) {
+                params['id'] = rowData.id;
+            }
             params['data'] = rowData.data;
         }
-        if (row) params['source'] = row;
+        if (row) {
+            params['source'] = row;
+        }
         if (grd.ctl) {
             var el = Ext.getCmp(grd.ctl);
             if (el && el.setValue) {
@@ -300,10 +304,14 @@ my.Select.Array = function (req) {
         };
         var rowData = grd.store.getAt(row);
         if (rowData) {
-            if (rowData.id) params['id'] = rowData.id;
+            if (rowData.id) {
+                params['id'] = rowData.id;
+            }
             params['data'] = rowData.data;
         }
-        if (row) params['source'] = row;
+        if (row) {
+            params['source'] = row;
+        }
         if (grd.ctl) {
             var el = Ext.getCmp(grd.ctl);
             if (el && el.setValue) {

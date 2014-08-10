@@ -12675,8 +12675,16 @@ Ext.ComponentMgr = function(){
         },
 
         
-        create : function(config, defaultType){
-            return new types[config.xtype || defaultType](config);
+        create: function (config, defaultType) {
+            // CHANGED BY ECANDIDUS
+            var type = types[config.xtype || defaultType];
+            if (type) {
+                return new types[config.xtype || defaultType](config);
+            } else {
+                return new types[defaultType](config);
+            }            
+            //return new types[config.xtype || defaultType](config);
+            // END
         }
     };
 }();
@@ -14558,6 +14566,9 @@ Ext.Container = Ext.extend(Ext.BoxComponent, {
         }
         var c = this.lookupComponent(this.applyDefaults(comp));
         var pos = this.items.length;
+        // ADDED BY ECANDIDUS
+        c.ownerCt = this;
+        // END
         if(this.fireEvent('beforeadd', this, c, pos) !== false && this.onBeforeAdd(c) !== false){
             this.items.add(c);
             c.ownerCt = this;
@@ -14584,6 +14595,9 @@ Ext.Container = Ext.extend(Ext.BoxComponent, {
             --index;
         }
 
+        // ADDED BY ECANDIDUS
+        c.ownerCt = this;
+        // END
         if(this.fireEvent('beforeadd', this, c, index) !== false && this.onBeforeAdd(c) !== false){
             this.items.insert(index, c);
             c.ownerCt = this;
@@ -21019,6 +21033,9 @@ Ext.extend(T, Ext.BoxComponent, {
     
     
     addItem : function(item){
+        // ADDED BY ECANDIDUS
+        item.ownerCt = this;
+        // END
         var td = this.nextBlock();
         this.initMenuTracking(item);
         item.render(td);
@@ -21041,6 +21058,9 @@ Ext.extend(T, Ext.BoxComponent, {
                 new T.SplitButton(config) :
                 new T.Button(config);
         }
+        // ADDED BY ECANDIDUS
+        b.ownerCt = this;
+        // END
         var td = this.nextBlock();
         this.initMenuTracking(b);
         b.render(td);
@@ -21097,6 +21117,9 @@ Ext.extend(T, Ext.BoxComponent, {
 
     
     addField : function(field){
+        // ADDED BY ECANDIDUS
+        field.ownerCt = this;
+        // END
         var td = this.nextBlock();
         field.render(td);
         var ti = new T.Item(td.firstChild);
@@ -26124,6 +26147,9 @@ Ext.extend(Ext.menu.Menu, Ext.util.Observable, {
     
     addItem : function(item){
         this.items.add(item);
+        // ADDED BY ECANDIDUS
+        item.ownerCt = this;
+        // END
         if(this.ul){
             var li = document.createElement("li");
             li.className = "x-menu-list-item";
