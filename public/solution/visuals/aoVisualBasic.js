@@ -20,7 +20,7 @@
 Ext.ns('Ext.ux.form');
 
 /**
- * Creates new aoVisualHolder
+ * Creates new aoVisualPanel
  * @constructor
  * @param {Object} config A config object
  */
@@ -90,7 +90,7 @@ Ext.ux.form.aoVisualPanel = Ext.extend(Ext.Panel, {
         }
 
         // Setup add menu
-        panel.getEl().on('click', function (e) {
+        panel.getEl().on('mouseup', function (e) {
             var loc = my.Functions.getAllXY(this.getEl(), e);
             var menuitems = [];
             menuitems.push({
@@ -182,7 +182,7 @@ Ext.ux.form.aoVisualTabs = Ext.extend(Ext.Panel, {
 });
 Ext.reg('aovtabs', Ext.ux.form.aoVisualTabs);
 
-/**
+    /**
  * Creates new aoVisualHolder
  * @constructor
  * @param {Object} config A config object
@@ -261,6 +261,10 @@ Ext.ux.form.aoVisualHolder = Ext.extend(Ext.form.Field, {
      * creates both fields and installs the necessary event handlers
      */
     initComponent: function () {
+
+        // Adjust fields
+        this.fieldLabel = this.label;
+
         // call parent initComponent
         Ext.ux.form.aoVisualHolder.superclass.initComponent.call(this);
 
@@ -452,6 +456,7 @@ Ext.ux.form.aoVisualHolder = Ext.extend(Ext.form.Field, {
                     handles: 'e',
                     pinned: false,
                     draggable: true,
+                    transparent: true,
                     listeners: {
                         resize: { fn: this.handleResize, scope: this }
                     }
@@ -459,53 +464,80 @@ Ext.ux.form.aoVisualHolder = Ext.extend(Ext.form.Field, {
                 stg.resizer.dd.vHolder = ctl;
                 stg.resizer.dd.addToGroup(ctl.ownerCt.getId());
 
-                stg.resizer.dd.onDragDrop = function (e, id) {
-                    this.vHolder.setAbsoluteXY(e.xy);
+                stg.resizer.dd.onMouseDown = function (e, ctl) {
+                    this.flagClick = true;
                 };
 
-                stg.resizer.dd.onDrag = function (e, id) {
-                    this.x = e.xy[0];
-                    this.y = e.xy[1];
+                stg.resizer.dd.onMouseUp = function (e, ctl) {
+                    if (this.flagClick) {
+                        var stg = my.Helper.getLocal(this.vHolder);
+
+                        var typeitems = [];
+                        my.Menu.SetChecked(typeitems, { text: 'String', itype: 'string' }, stg.wkgdef.type);
+                        my.Menu.SetChecked(typeitems, { text: 'Integer', itype: 'int' }, stg.wkgdef.type);
+                        my.Menu.SetChecked(typeitems, { text: 'Positive Integer', itype: 'positiveint' }, stg.wkgdef.type);
+                        my.Menu.SetChecked(typeitems, { text: 'Float', itype: 'float' }, stg.wkgdef.type);
+                        my.Menu.SetChecked(typeitems, { text: 'Date', itype: 'date' }, stg.wkgdef.type);
+                        my.Menu.SetChecked(typeitems, { text: 'Time', itype: 'time' }, stg.wkgdef.type);
+                        my.Menu.SetChecked(typeitems, { text: 'Phone', itype: 'phone' }, stg.wkgdef.type);
+                        my.Menu.SetChecked(typeitems, { text: 'ZIP Code', itype: 'zip' }, stg.wkgdef.type);
+                        my.Menu.SetChecked(typeitems, { text: 'Currency', itype: 'currency' }, stg.wkgdef.type);
+                        my.Menu.SetChecked(typeitems, { text: 'E-Mail', itype: 'email' }, stg.wkgdef.type);
+
+                        var menuitems = [];
+                        menuitems.push({
+                            text: 'Edit Label',
+                            source: this,
+                            loc: e.xy,
+                            handler: function () {
+                                var a = 1;
+                            }
+                        });
+                        menuitems.push({
+                            text: 'Set Type',
+                            source: this,
+                            loc: e.xy,
+                            handler: function () {
+                                var a = 1;
+                            },
+                            menu: new Ext.menu.Menu({
+                                items: typeitems
+                            })
+                        });
+                        var menu = new Ext.menu.Menu({
+                            renderTo: document.body,
+                            floating: true,
+                            items: menuitems
+                        });
+                        menu.showAt(e.xy);
+
+                        //e.preventDefault();
+                        //e.stopPropagation();
+                        //e.stopEvent();
+                    }
+                };
+
+                stg.resizer.dd.onDragDrop = function (e, id) {
+                    this.flagClick = false;
+                    var deltaX = this.lastPageX - this.startPageX;
+                    var deltaY = this.lastPageY - this.startPageY;
+
+                    var stg = my.Helper.getLocal(this.vHolder);
+                    stg.wkgdef.location.x += deltaX;
+                    stg.wkgdef.location.y += deltaY;
+
+                    this.vHolder.wrap.setLeft(e.xy[0]);
+                    this.vHolder.wrap.setTop(e.xy[1]);
                 };
             }
-        }   
+        }
     },
     /**
      * @private
      */
     adjustSize: Ext.BoxComponent.prototype.adjustSize,
     handleResize: function (ctl, w) {
-        this.setWidth(w);
-    },
-    /**
-     * @private
-     */
-    getAbsoluteXY: function () {
-        return this.wrap.getXY();
-    },
-    setAbsoluteXY: function (xy) {
-        this.wrap.setLeft(xy[0]);
-        this.wrap.setTop(xy[1]);
-
-        var stg = my.Helper.getLocal(this);
-
-        var parEl = this.ownerCt.getEl();
-        var parXY = parEl.getXY();
-        var parSIZE = parEl.getSize();
-
-        var maxX = parSIZE.width - this.width;
-        var maxY = parSIZE.height - this.height;
-
-        var x = xy[0] - (parXY[0] + 19);
-        if (x > maxX) x = maxX;
-        if (x < 0) x = 0;
-
-        var y = xy[1] - (parXY[1] + 14);
-        if (y > maxY) y = maxY;
-        if (y < 0) y = 0;
-
-        stg.wkgdef.location.x = x;
-        stg.wkgdef.location.y = y;
+        this.setWidth(w + 8);
     },
     /**
      * @private

@@ -138,8 +138,7 @@ my.Definitions.Fields = {
     generate: function (local, def) {
         // The local image
         var local = my.Functions.mergeRecursive(my.Definitions.Local(), {
-            wkgdef: def,
-            indefine: local.indefine
+            wkgdef: def
         });
 
         //

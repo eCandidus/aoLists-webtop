@@ -107,8 +107,7 @@ my.Generate.Window = function (req, def) {
 
 my.Generate.Form = function (req, def) {
     var local = my.Functions.mergeRecursive(my.Definitions.Local(), {
-        wkgdef: def,
-        indefine: req.indefine
+        wkgdef: def
     });
 
     return new Ext.ux.form.aoVisualPanel({

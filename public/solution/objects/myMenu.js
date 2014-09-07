@@ -173,3 +173,10 @@ my.Menu.ToolGenerator = function (def) {
     }
     return ans;
 };
+
+my.Menu.SetChecked = function (arr, item, ctype) {
+    if (item.itype == ctype) {
+        item.iconCls = 'eciok';
+    }
+    arr.push(item);
+};
